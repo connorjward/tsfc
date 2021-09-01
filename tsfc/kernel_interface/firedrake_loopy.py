@@ -12,7 +12,7 @@ from gem.optimise import remove_componenttensors as prune
 import loopy as lp
 
 from tsfc.finatinterface import create_element
-from tsfc.kernel_interface.common import KernelBuilderBase as _KernelBuilderBase
+from tsfc.kernel_interface.common import KernelBuilderBase as _KernelBuilderBase, KernelBuilderMixin
 from tsfc.kernel_interface.firedrake import check_requirements
 from tsfc.loopy import generate as generate_loopy
 
@@ -193,7 +193,7 @@ class ExpressionKernelBuilder(KernelBuilderBase):
                                 self.tabulations, name, count_flops(impero_c))
 
 
-class KernelBuilder(KernelBuilderBase):
+class KernelBuilder(KernelBuilderBase, KernelBuilderMixin):
     """Helper class for building a :class:`Kernel` object."""
 
     def __init__(self, integral_data_info, scalar_type,
