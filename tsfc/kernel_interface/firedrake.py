@@ -12,7 +12,7 @@ from gem.node import traversal
 from gem.optimise import remove_componenttensors as prune
 
 from tsfc.finatinterface import create_element
-from tsfc.kernel_interface.common import KernelBuilderBase as _KernelBuilderBase, KernelBuilderMixin
+from tsfc.kernel_interface.common import KernelBuilderBase as _KernelBuilderBase, KernelBuilderMixin, get_index_names
 from tsfc.coffee import generate as generate_coffee
 
 
@@ -221,7 +221,7 @@ class KernelBuilder(KernelBuilderBase, KernelBuilderMixin):
         provided by the kernel interface."""
         return check_requirements(ir)
 
-    def construct_kernel(self, name, ctx, index_names, quadrature_rule):
+    def construct_kernel(self, name, ctx, quadrature_rule):
         """Construct a fully built :class:`Kernel`.
 
         This function contains the logic for building the argument
@@ -229,7 +229,6 @@ class KernelBuilder(KernelBuilderBase, KernelBuilderMixin):
 
         :arg name: kernel name
         :arg ctx: kernel builder context to get impero_c from
-        :arg index_names: pre-assigned index names
         :arg quadrature rule: quadrature rule
         :returns: :class:`Kernel` object
         """
@@ -240,6 +239,7 @@ class KernelBuilder(KernelBuilderBase, KernelBuilderMixin):
         self.kernel.needs_cell_sizes = needs_cell_sizes
         self.kernel.tabulations = tabulations
 
+        index_names = get_index_names(ctx['quadrature_indices'], self.argument_multiindices, ctx['index_cache'])
         body = generate_coffee(impero_c, index_names, self.scalar_type)
 
         args = [self.local_tensor, self.coordinates_arg]
